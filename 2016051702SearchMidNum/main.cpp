@@ -108,13 +108,17 @@ int Partition(int* arr, int left, int right)
 		{
 			++begin;
 		}
+		if (begin < end)
+		{
+			arr[end--] = arr[begin];
+		}
 		while (begin < end&&arr[end] >= key)
 		{
 			--end;
 		}
 		if (begin < end)
 		{
-			swap(arr[begin], arr[end]);
+			arr[begin++] = arr[end];
 		}
 	}
 	arr[begin] = key;
