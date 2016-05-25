@@ -8,6 +8,7 @@ using namespace std;
 const int g_MaxLength = 10;
 char* str1Num = new char[g_MaxLength * 2 + 1];
 char* str2Num = new char[g_MaxLength * 2 + 1];
+//比较组合后两个数字的大小
 int Compare(const void* str1, const void* str2)
 {
 	strcpy(str1Num, *(const char**)str1);
@@ -28,6 +29,7 @@ void PrintMinNumber(int* number, int length)
 		strNum[i] = new char[g_MaxLength + 1];
 		itoa(number[i], strNum[i], 10);
 	}
+	//调用库函数
 	qsort(strNum, length, sizeof(char*), Compare);
 	for (int i = 0; i<length; ++i)
 	{
