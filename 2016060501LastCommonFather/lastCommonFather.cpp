@@ -37,7 +37,7 @@ private:
 		}
 		return ret;
 	}
-	BinaryTreeNode* _Find(BinaryTreeNode* root,int x)
+	BinaryTreeNode* _Find(BinaryTreeNode* root, int x)
 	{
 		if (root == NULL)
 			return NULL;
@@ -49,12 +49,12 @@ private:
 		BinaryTreeNode* rightRet = _Find(root->_right, x);
 		return rightRet;
 	}
-	BinaryTreeNode* _GetPath(BinaryTreeNode* root,const BinaryTreeNode* child1,const BinaryTreeNode* child2)
-	{	
+	BinaryTreeNode* _GetPath(BinaryTreeNode* root, const BinaryTreeNode* child1, const BinaryTreeNode* child2)
+	{
 		if (root == NULL)
 			return NULL;
 		bool temp = isInclude(root, child1, child2);
-		if (temp == NULL)
+		if (temp == false)
 			return NULL;
 		else
 		{
@@ -69,11 +69,11 @@ private:
 				return leftFind;
 		}
 	}
-	bool isInclude(BinaryTreeNode* root,const BinaryTreeNode* child1,const BinaryTreeNode* child2)
+	bool isInclude(BinaryTreeNode* root, const BinaryTreeNode* child1, const BinaryTreeNode* child2)
 	{
 		if (root == NULL)
 			return false;
-		bool c1 = false , c2=false;
+		bool c1 = false, c2 = false;
 		if (root == child1)
 			c1 = true;
 		if (root == child2)
@@ -90,6 +90,27 @@ private:
 				return false;
 		}
 
+	}
+	bool _GetPathStack(BinaryTreeNode* root, BinaryTreeNode* child, stack<BinaryTreeNode*>& s)
+	{
+		if (root == NULL)
+			return false;
+
+		s.push(root);
+		if (root == child)
+		{
+			return true;
+		}
+		if (_GetPathStack(root->_left, child, s))
+			return true;
+
+		if (_GetPathStack(root->_right, child, s))
+		{
+			return true;
+		}
+
+		s.pop();
+		return false;
 	}
 public:
 	BinaryTree()
@@ -113,7 +134,7 @@ public:
 			return;
 		stack<BinaryTreeNode*> s;
 		BinaryTreeNode* cur = _root;
-		BinaryTreeNode* prev= NULL;
+		BinaryTreeNode* prev = NULL;
 		while (cur || !s.empty())
 		{
 			while (cur)
@@ -122,7 +143,7 @@ public:
 				cur = cur->_left;
 			}
 			BinaryTreeNode* top = s.top();
-			if (top->_right==NULL||prev&&prev == top->_right)
+			if (top->_right == NULL || prev&&prev == top->_right)
 			{
 				cout << top->_data << " ";
 				prev = top;
@@ -143,17 +164,60 @@ public:
 	{
 		if (_root == NULL || child1 == NULL || child2 == NULL)
 			return NULL;
-		return _GetPath(_root, child1, child2);
+		stack<BinaryTreeNode*> s1, s2;
+		_GetPathStack(_root, child1, s1);
+		_GetPathStack(_root, child2, s2);
+		int size1 = s1.size();
+		int size2 = s2.size();
+		if (size1>size2)
+		{
+			int dif = size1 - size2;
+			while (dif--)
+			{
+				s1.pop();
+			}
+		}
+		else
+		{
+			int dif = size2 - size1;
+			while (dif--)
+			{
+				s2.pop();
+			}
+		}
+		BinaryTreeNode* top1 = NULL;
+		BinaryTreeNode* top2 = NULL;
+		if (!s1.empty() && !s2.empty())
+		{
+			top1 = s1.top();
+			top2 = s2.top();
+		}
+
+		while (!s1.empty() && top1 != top2)
+		{
+			s1.pop();
+			top1 = s1.top();
+			s2.pop();
+			top2 = s2.top();
+		}
+		return top1 == top2 ? top1 : NULL;
 	}
+	/*BinaryTreeNode* LastCommonFather(BinaryTreeNode* child1, BinaryTreeNode* child2)
+	{
+	if (_root == NULL || child1 == NULL || child2 == NULL)
+	return NULL;
+	return _GetPath(_root, child1, child2);
+	}*/
 };
-void Test1() 
+int main()
 {
 	int arr[] = { 1, 2, 4, 8, '#', '#', '#', 5, '#', 9, '#', '#', 3, 6, '#', '#', 7 };
 	BinaryTree bt(arr, sizeof(arr) / sizeof(arr[0]));
 	bt.PostOrder_NonR();
 	/*cout << bt.Find(9)->_data << endl;
 	if (bt.Find(0))
-		cout << bt.Find(0)->_data << endl;*/
+	cout << bt.Find(0)->_data << endl;*/
 	if (bt.LastCommonFather(bt.Find(9), bt.Find(7)))
-		cout<<bt.LastCommonFather(bt.Find(9),bt.Find(7))->_data<<endl;
+		cout << bt.LastCommonFather(bt.Find(9), bt.Find(7))->_data << endl;
+	system("pause");
 }
